@@ -1,0 +1,106 @@
+module LD_final_project(DATA_R, DATA_G, DATA_B, EN, COMM, test, CLK);
+	output reg [7:0] DATA_R, DATA_G, DATA_B;
+	output reg [3:0] COMM;
+	output reg EN;
+	output reg test;
+	input CLK, Left, Right;
+	reg [7:0] plate [7:0];
+	reg left, right;
+  divfreq F0(CLK, CLK_div);
+  divfreq1 F1(CLK, mode);
+  byte line;
+  
+  initial
+    begin
+	   line = 3;
+		DATA_R = 8'b11111111;
+	   DATA_G = 8'b11111111;
+	   DATA_B = 8'b11111111;
+		
+	 end
+	
+	always@(posedge CLK_div)
+		begin
+			right = Right;
+			left
+			if((right == 1'b1) && (R != 7))
+				begin
+					plate[line] = 8'b11111111;
+					plate[line+1] = 8'b11111100;
+				end
+			if((L == 1'b1) && (L != 0))
+				begin
+					plate[line] = 8'b11111111;
+					plate[line-1] = 8'b11111100;
+				end
+		end
+		
+	always @(posedge CLK_div)
+        begin
+	         if(cnt >= 7)
+		  	     cnt <= 0;
+			   else
+			     cnt <= cnt + 1;
+	     COMM = cnt;
+		  EN = 1'b1;
+		  if(mode == 0)
+		    DATA_G <= plate[line];
+		  else 
+		    DATA_R <= plate[line]; 
+		  end
+		  
+endmodule
+
+/*module mv_plate(input left, right, now, output [7:0] mv_R);
+	
+
+	R = right;
+	L = left;
+	N = now
+	plate[0] = 8'b11111111;
+	plate[1] = 8'b11111111;
+	plate[2] = 8'b11111111;
+	plate[3] = 8'b11111111;
+	plate[4] = 8'b11111111;
+	plate[5] = 8'b11111111;
+	plate[6] = 8'b11111111;
+	plate[7] = 8'b11111111;
+	
+
+
+endmodule
+*/
+		
+		
+module divfreq(input CLK, output reg CLK_div);
+  reg [24:0] Count;
+  always @(posedge CLK)
+    begin
+      if(Count > 50000)
+        begin
+          Count <= 25'b0;
+          CLK_div <= ~CLK_div;
+        end
+      else
+        Count <= Count + 1'b1;
+    end
+endmodule
+
+module divfreq1(input CLK, output reg mode);
+  reg [25:0] Count;
+  initial
+    begin
+      mode = 0;
+	 end	
+		
+  always @(posedge CLK)
+    begin
+      if(Count > 25000000)
+        begin
+          Count <= 25'b0;
+          mode <= ~mode;
+        end
+      else
+        Count <= Count + 1'b1;
+    end
+endmodule 
